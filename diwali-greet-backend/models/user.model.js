@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-
+var validator = require("validator");
 let userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -25,6 +25,7 @@ let userSchema = new mongoose.Schema({
   },
 });
 
-const UserModel = mongoose.model();
+const UserModel = mongoose.model("User", userSchema);
+module.exports = { UserModel };
 
 // sat  ; backend (); Frontend (Greeting)
