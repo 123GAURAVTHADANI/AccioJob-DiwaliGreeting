@@ -1,5 +1,8 @@
 var mongoose = require("mongoose");
 var validator = require("validator");
+var bcrypt = require("bcrypt");
+var jwt = require("jsonwebtoken");
+
 let userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -24,6 +27,21 @@ let userSchema = new mongoose.Schema({
     required: [true, "Kindly Provide the password"],
   },
 });
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  this.password = await bcrypt.hash(this.password, 10);
+});
+userSchema.methods = {
+  comparePassword: async function (plainpassword) {
+    return await bcrypt.compare(plainpassword, this.password);
+  },
+  generateJWTToken: async function () {
+    return await jwt.sign({ id: this._id, email: this.email }, "123AccioJob");
+  },
+};
 
 const UserModel = mongoose.model("User", userSchema);
 module.exports = { UserModel };
